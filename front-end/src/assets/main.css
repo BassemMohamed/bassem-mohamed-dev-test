@@ -1,0 +1,13 @@
+body {
+    margin: 0;
+    font-family: 'Source Sans Pro', Arial, sans-serif;
+}
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
+input {
+    border-width: 1px;
+}
