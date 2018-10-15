@@ -10,12 +10,16 @@ const CardWrapper = styled.div`
     :hover {
         box-shadow: 0 2px 8px ${props => props.theme.Secondary};
     }
+`;
+const ImgWrapper = styled.div`
+    width: 50%;
+    height: 100%;
+    padding: 10px 20px;
     img {
-        width: 50%;
-        height: 100%;
+        width: 100%;
         display: block;
     }
-`;
+`
 const Title = styled.p`
     margin: 0;
     font-size: 23px;
@@ -23,7 +27,7 @@ const Title = styled.p`
     color: ${props => props.theme.Secondary};
 `;
 const Desc = styled.p`
-    margin: 20px 0 0 0;
+    margin: 15px 0 0 0;
     font-size: 15px;
 `;
 const TextWrapper = styled.div`
@@ -36,7 +40,7 @@ export default class Card extends React.Component {
     render() {
         return (
             <CardWrapper>
-                <Image src={this.props.icon} />
+                <ImgWrapper><Image src={this.props.icon} /></ImgWrapper>
                 <TextWrapper>
                     <Title>{this.props.name}</Title>
                     <Desc>{this.props.desc}</Desc>
