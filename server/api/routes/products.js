@@ -1,7 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const router = express.Router();
-const Product = require('../models/product');
 const ProductsController = require('../controllers/products');
 
 // Fetching All Products
@@ -15,5 +13,8 @@ router.get("/:id", ProductsController.products_get_product_by_id);
 
 // Adding new product to db
 router.post("/", ProductsController.products_add_product);
+
+// Seeding The Database
+router.post("/seed", ProductsController.products_seed);
 
 module.exports = router;

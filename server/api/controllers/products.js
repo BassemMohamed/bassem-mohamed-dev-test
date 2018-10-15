@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
-const Product = require("../models/product");
 const Category = require("../models/category");
+const Product = require("../models/product");
 
 exports.products_get_all = (req, res, next) => {
     Product.find()
+    .populate('category')
     .select("name price image brand category")
     .exec()
     .then(docs => {
@@ -16,7 +17,7 @@ exports.products_get_all = (req, res, next) => {
                     price: doc.price,
                     image: doc.image,
                     brand: doc.brand,
-                    // category: getCategory(doc.category)
+                    category: doc.category.name
                 };
             })
         };
@@ -30,9 +31,9 @@ exports.products_get_all = (req, res, next) => {
 };
 
 exports.products_get_product = (req, res, next) => {
-    const id = req.params.key;
-    console.log(id);
-    Product.find({ name: { $regex : new RegExp(id, "i") } })
+    const key = req.params.key;
+    Product.find({ name: { $regex : new RegExp(key, "i") } })
+    .populate('category')
     .select("name price image brand category")
     .exec()
     .then(docs => {
@@ -45,7 +46,7 @@ exports.products_get_product = (req, res, next) => {
                     price: doc.price,
                     image: doc.image,
                     brand: doc.brand,
-                    // category: getCategory(doc.category)
+                    category: doc.category.name
                 };
             })
         };
@@ -60,7 +61,7 @@ exports.products_get_product = (req, res, next) => {
 
 exports.products_get_product_by_id = (req, res, next) => {
     const id = req.params.id;
-    Product.findById(id).exec().then( doc => {
+    Product.findById(id).populate('category').exec().then( doc => {
         res.status(200).json(doc);
     }).catch(err => {
         res.status(500).json({
@@ -80,30 +81,38 @@ exports.products_add_product = (req, res, next) => {
         brand: req.body.brand
     })
 
-    if(pr.name && pr.image && pr.brand) {
-        pr.save().then(result => {
-            console.log(result);
-        }).catch(err => {
-            console.log(err);
-        });
+    pr.save().then(result => {
         res.status(201).json({
             message: "Post Request Handled",
             createdProduct: pr
         })
-    } else {
+    }).catch(err => {
         res.status(400).json({
-            message: "Product is not valid",
-            Product: pr
+            message: "Invalid product",
+            error: err
         })
-    }
+    });
 }
 
-getCategory = (id) => {
-    Category.findById(id)
-    .select("name")
-    .exec()
-    .then(docs => {
-        console.log(docs);
-        return docs[0].name;
-    })
+exports.products_seed = (req,res,next) => {
+
+    // Droping the Table, Brace for impact.
+    Product.collection.drop();
+
+    seedList = require('../products.json');
+    seedList.map( (item) => {
+        pr = new Product({
+            _id: new mongoose.Types.ObjectId(),
+            name: item.name,
+            image: item.image,
+            price: item.price,
+            category: item.category,
+            brand: item.brand
+        });
+        return pr.save().then(result => {
+            console.log(result);
+        }).catch(err => {
+            console.log(err);
+        });;
+    });
 }
